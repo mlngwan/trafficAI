@@ -58,7 +58,6 @@ export default function Sidebar() {
         </ul>
       </div>
 
-      {/* 푸터 */}
       <footer className="mt-10 text-xs text-neutral-400 text-center">
         © {new Date().getFullYear()} Market Mentor
       </footer>
