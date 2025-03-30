@@ -15,7 +15,7 @@ export default function ChatInput({ inputRef, clickHandler }: ChatInputProps) {
     const trimmed = inputValue.trim();
     if (!trimmed) return;
     clickHandler(trimmed);
-    setInputValue(""); // 입력창 초기화
+    setInputValue("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
