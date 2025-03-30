@@ -15,7 +15,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
-        {children}
         <div className="flex">
           <div className="w-1/4">
             <Sidebar />
