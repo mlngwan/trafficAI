@@ -1,8 +1,11 @@
+"use client";
+
 import { useRef, useState } from "react";
 
 type ChatPair = {
   question: string;
   answer: string;
+  timestamp: string;
 };
 
 export default function useChat() {
@@ -17,29 +20,37 @@ export default function useChat() {
     }, 100);
   };
 
-  async function clickHandler() {
-    if (!inputRef.current) return alert("입력창 없음");
-    const question = inputRef.current.value.trim();
-    if (!question) return;
+  async function clickHandler(question: string) {
+    if (!question.trim()) return;
 
-    inputRef.current.value = "";
+    const now = new Date().toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    setChatHistory((prev) => [
+      ...prev,
+      { question, answer: "", timestamp: now },
+    ]);
+    scrollToBottom();
     setLoading(true);
 
-    setChatHistory((prev) => [...prev, { question, answer: "" }]);
-    scrollToBottom();
-
     try {
-      const res = await fetch("http://127.0.0.1:8000/ask", {
+      const res = await fetch("http://127.0.0.1:8080/ask_rag", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question, analyzed: {} }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question, force_gpt: false }),
       });
 
       const data = await res.json();
+      const answer = data.response;
 
       setChatHistory((prev) => {
         const updated = [...prev];
-        updated[updated.length - 1].answer = data.answer;
+        updated[updated.length - 1].answer = answer;
         return updated;
       });
     } catch (err) {
@@ -50,5 +61,11 @@ export default function useChat() {
     }
   }
 
-  return { chatHistory, inputRef, clickHandler, scrollRef, loading };
+  return {
+    inputRef,
+    scrollRef,
+    chatHistory,
+    clickHandler,
+    loading,
+  };
 }
